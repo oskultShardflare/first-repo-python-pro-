@@ -1,27 +1,35 @@
+```python
 import discord
+from discord.ext import commands
+import requests
+import random
 
-# La variable intents almacena los privilegios del bot
-intents = discord.Intents.default()
-# Activar el privilegio de lectura de mensajes
-intents.message_content = True
-# Crear un bot en la variable cliente y transferirle los privilegios
-client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 
-@client.event
-async def on_ready():
-    print(f'Hemos iniciado sesión como {client.user}')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    if message.content.startswith('$hello'):
-        await message.channel.send("Hi!")
-    elif message.content.startswith('$bye'):
-        await message.channel.send("\U0001f642")
-    elif message.content.startswith('how are you?'):
-        await message.channel.send("gud!")
-    else:
-        await message.channel.send(message.content)
+@bot.command()
+async def hello(ctx):
+    await ctx.send("Hello! I'm your useful Discord bot!")
 
-client.run("")
+
+@bot.command()
+async def dog(ctx):
+    url = 'https://random.dog/woof.json'
+    res = requests.get(url)
+    data = res.json()
+    await ctx.send(data['url'])
+
+
+@bot.command()
+async def roll(ctx):
+    number = random.randint(1, 100)
+    await ctx.send(f"You rolled {number}!")
+
+
+@bot.command()
+async def helpme(ctx):
+    await ctx.send("Commands: !hello, !dog, !roll")
+
+
+bot.run("")
+```
